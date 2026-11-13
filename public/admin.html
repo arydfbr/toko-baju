@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin Toko</title>
+<style>
+  :root { --ink:#141414; --muted:#6b6b6b; --line:#e4e2dd; --bg:#f6f5f2; --ok:#1f7a4d; --warn:#b4541a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width:720px; margin:0 auto; padding:16px 14px 80px; }
+  h1 { font-size:20px; margin:8px 0 14px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .tabs { display:flex; gap:6px; position:sticky; top:0; background:var(--bg); padding:8px 0; z-index:2; overflow-x:auto; }
+  .tab { border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:8px 14px; font:inherit; font-weight:600; font-size:14px; cursor:pointer; white-space:nowrap; }
+  .tab[aria-pressed="true"] { background:var(--ink); border-color:var(--ink); color:#fff; }
+  .tab .n { display:inline-block; min-width:20px; padding:0 6px; border-radius:999px; background:#f0b38a; color:#3b1d08; font-size:12px; margin-left:4px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-top:10px; }
+  .order-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .badge { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; }
+  .b-pending { background:#fff1e6; color:var(--warn); } .b-paid { background:#e6f4ec; color:var(--ok); }
+  .b-shipped { background:#e7eefc; color:#2350b8; } .b-expired, .b-cancelled { background:#eee; color:#666; }
+  .total { font-size:18px; font-weight:800; }
+  .total .u { color:var(--warn); }
+  .items { margin:8px 0; font-weight:600; }
+  .addr { white-space:pre-wrap; font-size:14px; background:#f7f6f3; border-radius:10px; padding:10px; margin:8px 0; }
+  .actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .btn { border:0; border-radius:10px; padding:10px 14px; font:inherit; font-weight:700; font-size:14px; cursor:pointer; background:var(--ink); color:#fff; text-decoration:none; display:inline-block; }
+  .btn.ok { background:var(--ok); } .btn.wa { background:#1f9d55; } .btn.ghost { background:#fff; color:var(--ink); border:1.5px solid var(--line); }
+  .btn.danger { background:#fff; color:#b42318; border:1.5px solid #f3c2bd; }
+  .btn:disabled { opacity:.5; }
+  input, select { font:inherit; padding:10px; border:1.5px solid var(--line); border-radius:10px; background:#fff; }
+  .ship-form { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .ship-form input { flex:1; min-width:120px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { padding:10px 6px; border-bottom:1px solid var(--line); text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .low { color:var(--warn); font-weight:800; }
+  .zero { color:#b42318; font-weight:800; }
+  .restock { display:flex; gap:4px; justify-content:flex-end; }
+  .restock input { width:64px; padding:6px; text-align:center; }
+  .restock button { padding:6px 10px; font-size:13px; }
+  .alert { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px; font-size:14px; margin-top:10px; }
+  .kpi { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .kpi .card { margin:0; } .kpi b { font-size:22px; display:block; }
+  .bar { height:8px; background:#ebe9e4; border-radius:4px; overflow:hidden; min-width:60px; }
+  .bar i { display:block; height:100%; background:var(--ink); }
+  .hidden { display:none !important; }
+  .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 16px; border-radius:10px; font-size:14px; z-index:9; }
+  .search { width:100%; margin-top:8px; }
+</style>
+</head>
+<body>
+<main>
+  <!-- LOGIN -->
+  <section id="login" class="hidden">
+    <h1>Admin Toko</h1>
+    <form id="loginForm" class="card">
+      <label for="pw" class="muted">Password admin</label><br>
+      <input id="pw" type="password" autocomplete="current-password" style="width:100%;margin:6px 0 10px">
+      <button class="btn" style="width:100%">Masuk</button>
+      <p id="loginErr" style="color:#b42318;font-size:14px"></p>
+    </form>
+  </section>
+
+  <!-- APP -->
+  <section id="app" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1 id="title">Admin</h1>
+      <div><button class="btn ghost" id="refresh">↻</button> <button class="btn ghost" id="logout">Keluar</button></div>
+    </div>
+    <div id="alerts"></div>
+    <div class="tabs" id="tabs"></div>
+    <div id="view"></div>
+  </section>
+</main>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const rp = (n) => "Rp" + Number(n).toLocaleString("id-ID");
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const dt = (ms) => ms ? new Date(ms).toLocaleString("id-ID", { dateStyle:"medium", timeStyle:"short" }) : "";
+const STATUS = { pending:"Belum bayar", paid:"Lunas — siap kirim", shipped:"Dikirim", expired:"Kedaluwarsa", cancelled:"Dibatalkan" };
+
+let KEY = ""; try { KEY = sessionStorage.getItem("adminKey") || ""; } catch {}
+let D = null, tab = "pending", q = "";
+
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.add("hidden"), 2500); }
+
+async function api(path, body) {
+  const r = await fetch(path, {
+    method: body ? "POST" : "GET",
+    headers: { "x-admin-key": KEY, ...(body ? { "content-type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401) { logout(); throw new Error(d.error || "Password salah."); }
+  if (!r.ok) throw new Error(d.error || "Terjadi kesalahan.");
+  return d;
+}
+
+function logout() { KEY = ""; try { sessionStorage.removeItem("adminKey"); } catch {} $("app").classList.add("hidden"); $("login").classList.remove("hidden"); }
+$("logout").onclick = logout;
+$("refresh").onclick = () => load().then(() => toast("Data diperbarui"));
+
+$("loginForm").onsubmit = async (e) => {
+  e.preventDefault(); KEY = $("pw").value; $("loginErr").textContent = "";
+  try { await load(); try { sessionStorage.setItem("adminKey", KEY); } catch {} }
+  catch (err) { $("loginErr").textContent = err.message; }
+};
+
+async function load() {
+  D = await api("/api/admin/dashboard");
+  $("login").classList.add("hidden"); $("app").classList.remove("hidden");
+  render();
+}
+
+// ---------- template pesan WhatsApp ----------
+function waLink(o) {
+  const c = D.config, items = o.items.map((i) => `${i.qty}x ${i.color} ${i.size}`).join(", ");
+  const link = `${location.origin}/?order=${o.code}`;
+  let t;
+  if (o.status === "pending")
+    t = `Halo ${o.name}, terima kasih sudah order ${c.productName}.\n\nPesanan: ${o.code}\n${items}\nTotal: ${rp(o.total)} (mohon transfer tepat, termasuk kode unik)\n\nTransfer ke ${c.bank.name} ${c.bank.number} a.n. ${c.bank.holder}\nBatas bayar: ${dt(o.expires_at)}\n\nDetail: ${link}`;
+  else if (o.status === "paid")
+    t = `Halo ${o.name}, pembayaran pesanan ${o.code} sebesar ${rp(o.total)} sudah kami terima. Pesanan segera kami kemas dan kirim. Terima kasih!`;
+  else if (o.status === "shipped")
+    t = `Halo ${o.name}, pesanan ${o.code} sudah dikirim via ${o.courier}.\nNo. resi: ${o.resi}\n\nCek status: ${link}\nTerima kasih sudah belanja!`;
+  else
+    t = `Halo ${o.name}, terkait pesanan ${o.code}…`;
+  return `https://wa.me/${o.phone}?text=${encodeURIComponent(t)}`;
+}
+
+function render() {
+  $("title").textContent = D.config.productName;
+  const count = (s) => D.orders.filter((o) => o.status === s).length;
+
+  // peringatan stok
+  const low = D.variants.filter((v) => v.stock <= D.config.lowStock);
+  $("alerts").innerHTML = low.length
+    ? `<div class="alert">⚠️ Stok menipis: ${low.map((v) => `<b>${esc(v.color)} ${esc(v.size)}</b> (${v.stock})`).join(", ")}</div>` : "";
+
+  const tabs = [
+    ["pending", "Belum bayar", count("pending")], ["paid", "Siap kirim", count("paid")],
+    ["shipped", "Dikirim", 0], ["closed", "Batal/Kedaluwarsa", 0], ["stock", "Stok", 0], ["sales", "Penjualan", 0],
+  ];
+  $("tabs").innerHTML = tabs.map(([id, label, n]) =>
+    `<button class="tab" data-tab="${id}" aria-pressed="${tab === id}">${label}${n ? `<span class="n">${n}</span>` : ""}</button>`).join("");
+
+  if (tab === "stock") return renderStock();
+  if (tab === "sales") return renderSales();
+  renderOrders();
+}
+
+function renderOrders() {
+  const want = tab === "closed" ? ["expired", "cancelled"] : [tab];
+  const term = q.trim().toLowerCase();
+  const list = D.orders.filter((o) => want.includes(o.status) &&
+    (!term || [o.code, o.name, o.phone, String(o.total)].some((x) => String(x).toLowerCase().includes(term))));
+  const hint = tab === "pending"
+    ? `<p class="muted">Cocokkan mutasi rekening dengan <b>total + kode unik</b>. Ketik nominal transfer di kotak cari untuk menemukan pesanannya.</p>` : "";
+  $("view").innerHTML = hint +
+    `<input class="search" id="q" placeholder="Cari kode, nama, nomor, atau nominal…" value="${esc(q)}">` +
+    (list.length ? list.map(orderCard).join("") : `<div class="card muted">Tidak ada pesanan.</div>`);
+  const qi = $("q"); qi.oninput = () => { q = qi.value; const pos = qi.selectionStart; renderOrders(); const n = $("q"); n.focus(); n.setSelectionRange(pos, pos); };
+}
+
+function orderCard(o) {
+  const t = o.total.toLocaleString("id-ID");
+  const items = o.items.map((i) => `${i.qty}× ${esc(i.color)} ${esc(i.size)}`).join(" · ");
+  let actions = `<a class="btn wa" href="${waLink(o)}" target="_blank" rel="noopener">WA pembeli</a>`;
+  if (o.status === "pending") actions = `<button class="btn ok" data-act="paid" data-code="${o.code}">✓ Tandai lunas</button>` + actions + `<button class="btn danger" data-act="cancel" data-code="${o.code}">Batalkan</button>`;
+  if (o.status === "expired") actions = `<button class="btn ok" data-act="paid" data-code="${o.code}">Ternyata sudah bayar</button>` + actions;
+  if (o.status === "paid") actions += `<button class="btn ghost" data-copyaddr="${o.code}">Salin alamat</button><button class="btn danger" data-act="cancel" data-code="${o.code}">Batalkan</button>`;
+  if (o.status === "shipped") actions += `<button class="btn ghost" data-copyaddr="${o.code}">Salin alamat</button>`;
+
+  const shipForm = (o.status === "paid" || o.status === "shipped") ? `
+    <form class="ship-form" data-ship="${o.code}">
+      <input name="courier" placeholder="Kurir (JNE, J&T…)" value="${esc(o.courier || "")}" required>
+      <input name="resi" placeholder="Nomor resi" value="${esc(o.resi || "")}" required>
+      <button class="btn">${o.status === "shipped" ? "Ubah resi" : "Kirim"}</button>
+    </form>` : "";
+
+  return `<div class="card">
+    <div class="order-head">
+      <div><b>${esc(o.code)}</b> <span class="badge b-${o.status}">${STATUS[o.status]}</span>
+        <div class="muted">${dt(o.created_at)}${o.status === "pending" ? ` · batas ${dt(o.expires_at)}` : ""}</div></div>
+      <div class="total" style="text-align:right">Rp${t.slice(0, -3)}<span class="u">${t.slice(-3)}</span></div>
+    </div>
+    <div class="items">${items}</div>
+    <div><b>${esc(o.name)}</b> · ${esc(o.phone)} · ${esc(o.shipping_label)}</div>
+    <div class="addr">${esc(o.address)}</div>
+    ${o.note ? `<div class="muted">Catatan: ${esc(o.note)}</div>` : ""}
+    ${shipForm}
+    <div class="actions">${actions}</div>
+  </div>`;
+}
+
+function renderStock() {
+  const reserved = Object.fromEntries(D.sales.map((s) => [s.id, s.reserved]));
+  $("view").innerHTML = `<div class="card">
+    <p class="muted">"Dipesan" = sedang dikunci oleh pesanan yang belum dibayar (otomatis kembali jika kedaluwarsa). Isi angka lalu tekan <b>+</b> untuk restock atau <b>−</b> untuk mengurangi (barang rusak, dipakai sendiri, dll.).</p>
+    <table><thead><tr><th>Varian</th><th class="num">Stok</th><th class="num">Dipesan</th><th class="num">Ubah</th></tr></thead><tbody>
+    ${D.variants.map((v) => `<tr>
+      <td><b>${esc(v.color)}</b> ${esc(v.size)}</td>
+      <td class="num ${v.stock === 0 ? "zero" : v.stock <= D.config.lowStock ? "low" : ""}">${v.stock}</td>
+      <td class="num muted">${reserved[v.id] || 0}</td>
+      <td><div class="restock"><input type="number" min="1" value="" placeholder="0" id="d-${v.id}">
+        <button class="btn" data-stock="${v.id}" data-sign="1">+</button><button class="btn ghost" data-stock="${v.id}" data-sign="-1">−</button></div></td>
+    </tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+function renderSales() {
+  const max = Math.max(1, ...D.sales.map((s) => s.sold));
+  const sold = D.sales.reduce((s, x) => s + x.sold, 0);
+  const byColor = {}; D.sales.forEach((s) => (byColor[s.color] = (byColor[s.color] || 0) + s.sold));
+  $("view").innerHTML = `
+    <div class="kpi" style="margin-top:10px">
+      <div class="card"><span class="muted">Omzet produk (lunas)</span><b>${rp(D.totals.revenue)}</b></div>
+      <div class="card"><span class="muted">Terjual</span><b>${sold} pcs</b><span class="muted">${D.totals.orders} pesanan</span></div>
+    </div>
+    <div class="card"><span class="muted">Per warna:</span> ${Object.entries(byColor).map(([c, n]) => `<b>${esc(c)}</b> ${n}`).join(" · ")}</div>
+    <div class="card"><table><thead><tr><th>Varian</th><th class="num">Terjual</th><th></th><th class="num">Sisa</th></tr></thead><tbody>
+      ${D.sales.map((s) => { const v = D.variants.find((x) => x.id === s.id); return `<tr>
+        <td><b>${esc(s.color)}</b> ${esc(s.size)}</td><td class="num">${s.sold}</td>
+        <td style="width:40%"><div class="bar"><i style="width:${(s.sold / max) * 100}%"></i></div></td>
+        <td class="num ${v.stock <= D.config.lowStock ? "low" : ""}">${v.stock}</td></tr>`; }).join("")}
+    </tbody></table>
+    <p class="muted">Gunakan perbandingan ini untuk menentukan jumlah tiap ukuran saat restock berikutnya. Omzet belum termasuk ongkir & kode unik.</p></div>`;
+}
+
+// ---------- aksi ----------
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-tab]");
+  if (t) { tab = t.dataset.tab; q = ""; render(); return; }
+
+  const a = e.target.closest("[data-act]");
+  if (a) {
+    const msg = a.dataset.act === "cancel" ? `Batalkan pesanan ${a.dataset.code}? Stok akan dikembalikan.` : `Tandai ${a.dataset.code} sudah lunas? Pastikan dana sudah masuk ke rekening.`;
+    if (!confirm(msg)) return;
+    a.disabled = true;
+    try {
+      await api("/api/admin/order", { code: a.dataset.code, action: a.dataset.act });
+      await load();
+      if (a.dataset.act === "paid") {
+        const o = D.orders.find((x) => x.code === a.dataset.code);
+        toast("Lunas ✓ — kirim konfirmasi ke pembeli");
+        if (o) window.open(waLink(o), "_blank");
+      } else toast("Pesanan dibatalkan");
+    } catch (err) { toast(err.message); a.disabled = false; }
+    return;
+  }
+
+  const ca = e.target.closest("[data-copyaddr]");
+  if (ca) {
+    const o = D.orders.find((x) => x.code === ca.dataset.copyaddr);
+    const text = `${o.name}\n${o.phone}\n${o.address}\n\nIsi: ${o.items.map((i) => `${i.qty}x ${i.color} ${i.size}`).join(", ")} (${o.code})`;
+    try { await navigator.clipboard.writeText(text); toast("Alamat tersalin — tempel di aplikasi kurir"); } catch { toast("Gagal menyalin"); }
+    return;
+  }
+
+  const s = e.target.closest("[data-stock]");
+  if (s) {
+    const n = Math.abs(parseInt($("d-" + s.dataset.stock).value, 10));
+    if (!n) { toast("Isi jumlahnya dulu"); return; }
+    try { await api("/api/admin/stock", { id: s.dataset.stock, delta: n * Number(s.dataset.sign) }); await load(); toast("Stok diperbarui"); }
+    catch (err) { toast(err.message); }
+  }
+});
+
+document.addEventListener("submit", async (e) => {
+  const f = e.target.closest("[data-ship]");
+  if (!f) return;
+  e.preventDefault();
+  const code = f.dataset.ship;
+  try {
+    await api("/api/admin/order", { code, action: "ship", courier: f.courier.value, resi: f.resi.value });
+    await load();
+    const o = D.orders.find((x) => x.code === code);
+    toast("Resi tersimpan — kirim ke pembeli");
+    if (o) window.open(waLink(o), "_blank");
+  } catch (err) { toast(err.message); }
+});
+
+KEY ? load().catch(() => logout()) : logout();
+</script>
+</body>
+</html>
