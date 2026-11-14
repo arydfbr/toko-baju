@@ -16,7 +16,8 @@ Cloudflare Pages + D1. Ready stock, 2 warna (Putih/Hitam) × 6 ukuran (S–3XL).
 ## Struktur
 
 ```
-public/index.html          halaman toko + halaman pembayaran/status (?order=KODE)
+public/index.html          halaman pembuka (stok langsung + cara beli)
+public/pesan.html          halaman pemesanan + pembayaran/status (/pesan?order=KODE)
 public/admin.html          dashboard admin
 public/img/putih.jpg       foto produk (tambahkan sendiri)
 public/img/hitam.jpg

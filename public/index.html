@@ -3,344 +3,192 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Toko Kaos</title>
+<title>Croco Grandson · ABG Siniar Merchandise</title>
+<meta name="description" content="Kaos Croco Grandson dari ABG Siniar. Ready stock putih dan hitam, ukuran S sampai 3XL.">
+<meta property="og:title" content="Croco Grandson · ABG Siniar Merchandise">
+<meta property="og:description" content="Ready stock putih dan hitam, ukuran S sampai 3XL.">
+<meta property="og:image" content="/img/putih.jpg">
+<script>
+  // Link pesanan lama (/?order=KODE) dialihkan ke halaman pesanan
+  (function () {
+    var q = new URLSearchParams(location.search);
+    if (q.get("order")) location.replace("/pesan?order=" + encodeURIComponent(q.get("order")));
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#141414; --muted:#6b6b6b; --line:#e4e2dd; --bg:#f6f5f2; --accent:#141414; --ok:#1f7a4d; --warn:#b4541a; }
+  :root { --ink:#1a1a1a; --red:#d2321f; --blue:#1f86c3; --green:#9cc94a; --yellow:#f5b82e; --ground:#fff9ec; --body:#3f3a30; --muted:#6b5d45; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
-  main { max-width:520px; margin:0 auto; padding:20px 16px 120px; }
-  h1 { font-size:24px; margin:16px 0 4px; letter-spacing:-.01em; }
-  h2 { font-size:15px; margin:28px 0 10px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
-  .price { font-size:20px; font-weight:700; }
-  .muted { color:var(--muted); font-size:14px; }
-  .photo { aspect-ratio:1; border-radius:16px; overflow:hidden; background:#d7d7d9; display:grid; place-items:center; }
-  .photo img { width:100%; height:100%; object-fit:contain; }
-  .photo svg { width:70%; }
-  .opts { display:flex; flex-wrap:wrap; gap:8px; }
-  .opt { border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:10px 16px; font:inherit; font-weight:600; cursor:pointer; position:relative; }
-  .opt[aria-pressed="true"] { border-color:var(--ink); background:var(--ink); color:#fff; }
-  .opt:disabled { color:#bbb; text-decoration:line-through; cursor:not-allowed; background:#f1f0ec; }
-  .opt small { display:block; font-weight:500; font-size:11px; color:var(--warn); }
-  .opt[aria-pressed="true"] small { color:#ffd2b5; }
-  .opt small.extra { color:var(--muted); }
-  .opt[aria-pressed="true"] small.extra { color:#d9d6cf; }
-  .swatch { display:inline-block; width:14px; height:14px; border-radius:50%; vertical-align:-2px; margin-right:6px; border:1px solid #999; }
-  .row { display:flex; align-items:center; gap:12px; }
-  .qty { display:flex; align-items:center; border:1.5px solid var(--line); border-radius:999px; background:#fff; }
-  .qty button { width:40px; height:40px; border:0; background:none; font-size:20px; cursor:pointer; }
-  .qty span { min-width:28px; text-align:center; font-weight:700; }
-  .btn { display:block; width:100%; border:0; border-radius:14px; padding:15px; font:inherit; font-weight:700; font-size:16px; cursor:pointer; background:var(--accent); color:#fff; text-align:center; text-decoration:none; }
-  .btn.secondary { background:#fff; color:var(--ink); border:1.5px solid var(--ink); }
-  .btn.wa { background:#1f9d55; }
-  .btn:disabled { opacity:.5; cursor:not-allowed; }
-  .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; }
-  .cart-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed var(--line); }
-  .cart-item:last-child { border-bottom:0; }
-  .x { border:0; background:none; color:var(--muted); font-size:13px; cursor:pointer; text-decoration:underline; }
-  label { display:block; font-size:14px; font-weight:600; margin:14px 0 6px; }
-  input, textarea, select { width:100%; font:inherit; padding:12px; border:1.5px solid var(--line); border-radius:12px; background:#fff; }
-  textarea { min-height:84px; resize:vertical; }
-  .sum { display:flex; justify-content:space-between; padding:4px 0; font-size:15px; }
-  .sum.total { font-weight:800; font-size:18px; border-top:1px solid var(--line); margin-top:8px; padding-top:10px; }
-  .err { color:#b42318; font-size:14px; margin:10px 0 0; min-height:1em; }
-  .big { font-size:30px; font-weight:800; letter-spacing:-.01em; }
-  .big .u { color:var(--warn); }
-  .copy { border:1px solid var(--line); background:#f7f6f3; border-radius:8px; padding:4px 10px; font:inherit; font-size:13px; cursor:pointer; margin-left:6px; }
-  .badge { display:inline-block; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:700; }
-  .b-pending { background:#fff1e6; color:var(--warn); } .b-paid { background:#e6f4ec; color:var(--ok); }
-  .b-shipped { background:#e7eefc; color:#2350b8; } .b-expired, .b-cancelled { background:#eee; color:#666; }
-  .stack > * + * { margin-top:12px; }
-  .sizechart { margin-top:12px; font-size:13px; }
-  .sizechart summary { cursor:pointer; font-weight:600; color:var(--ink); padding:6px 0; }
-  .sc-wrap { overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:12px; margin-top:6px; }
-  .sc-wrap table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
-  .sc-wrap th, .sc-wrap td { padding:8px 6px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap; }
-  .sc-wrap th { font-size:11px; color:var(--muted); font-weight:600; }
-  .sc-wrap td:first-child, .sc-wrap th:first-child { text-align:left; padding-left:12px; font-weight:700; color:var(--ink); }
-  .sc-wrap tr:last-child td { border-bottom:0; }
-  .sc-wrap tr.sel td { background:#fff1e6; }
-  .hidden { display:none !important; }
-  .notice { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px; font-size:14px; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:'Plus Jakarta Sans', system-ui, sans-serif; }
+  a { color:#1f6fa6; } a:hover { color:#16557f; }
+  .wrap { max-width:1200px; margin:0 auto; padding-left:24px; padding-right:24px; }
+  .display { font-family:'Titan One', sans-serif; font-weight:400; }
+  .eyebrow { font-size:13px; font-weight:800; letter-spacing:0.12em; color:#1f6fa6; }
+  .h2 { margin:0; font-size:clamp(32px, 4.5vw, 48px); line-height:1.05; }
+  .btn { display:inline-flex; align-items:center; gap:10px; min-height:52px; padding:0 24px; border-radius:14px; font-weight:800; font-size:17px; text-decoration:none; }
+  .btn-red { background:var(--red); color:#fff; box-shadow:4px 4px 0 var(--ink); }
+  .btn-red:hover { color:#fff; transform:translate(1px,1px); box-shadow:3px 3px 0 var(--ink); }
+  .btn-line { border:2px solid var(--ink); color:var(--ink); background:#fff; font-weight:700; font-size:16px; }
+  .btn-line:hover { color:var(--ink); background:#f3ede0; }
+  .btn-yellow { background:var(--yellow); color:var(--ink); border:3px solid var(--ink); font-size:18px; min-height:54px; padding:0 28px; }
+  .btn-yellow:hover { color:var(--ink); background:#ffc94d; }
+  .btn-ghost { background:transparent; color:#fff; border:2px solid #fff; font-weight:700; font-size:16px; min-height:54px; padding:0 22px; }
+  .btn-ghost:hover { color:#fff; background:rgba(255,255,255,0.12); }
+  .chip { min-width:56px; padding:8px 10px; border-radius:12px; text-align:center; font-weight:800; font-size:15px; text-decoration:none; color:var(--ink); line-height:1.3; }
+  .chip small { display:block; font-size:11px; font-weight:700; }
+  .chip.ok { background:#e9f4dc; border:2px solid #4f7a1d; } .chip.ok small { color:#3f6315; }
+  .chip.low { background:#fff1e0; border:2px solid #b4541a; } .chip.low small { color:#8f3f0f; }
+  .chip.out { background:#efeae0; border:2px dashed #8a8378; color:#8a8378; pointer-events:none; }
+  .chip.out b { text-decoration:line-through; }
+  .dark .chip.ok { border-color:var(--green); } .dark .chip.low { border-color:var(--yellow); }
+  .dark .chip.out { background:#3a3a3a; color:#b9b3a6; }
+  a.chip:hover { transform:translateY(-1px); color:var(--ink); }
+  .step { flex:1 1 200px; min-width:0; background:#fff; border:3px solid var(--ink); border-radius:20px; padding:20px; display:flex; flex-direction:column; gap:12px; }
+  .step .num { font-family:'Titan One', sans-serif; font-size:40px; line-height:1; color:var(--red); }
+  .step strong { font-size:18px; }
+  .step span.d { font-size:15px; line-height:1.5; color:var(--body); }
+  .skeleton { color:#8a8378; font-size:14px; }
 </style>
 </head>
 <body>
+
+<header class="wrap" style="padding-top:20px; padding-bottom:20px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap">
+  <div style="display:flex; align-items:baseline; gap:10px">
+    <span class="display" style="font-size:24px; letter-spacing:0.02em">ABG SINIAR</span>
+    <span style="font-size:13px; font-weight:700; color:var(--muted); letter-spacing:0.08em">MERCHANDISE</span>
+  </div>
+</header>
+
 <main>
-  <div id="loading" class="muted">Memuat…</div>
-
-  <!-- ============ HALAMAN PRODUK ============ -->
-  <section id="shop" class="hidden">
-    <div class="photo" id="photo"></div>
-    <h1 id="pname"></h1>
-    <div class="price" id="pprice"></div>
-    <p class="muted" id="psurcharge" style="margin:4px 0 0"></p>
-    <p class="muted" id="pdesc"></p>
-
-    <h2>Warna</h2>
-    <div class="opts" id="colors"></div>
-
-    <h2>Ukuran</h2>
-    <div class="opts" id="sizes"></div>
-    <details id="sizechart" class="sizechart"><summary>Panduan ukuran (cm)</summary><div class="sc-wrap" id="sizechartBody"></div></details>
-
-    <div class="row" style="margin-top:18px">
-      <div class="qty"><button id="minus" aria-label="Kurangi">−</button><span id="qty">1</span><button id="plus" aria-label="Tambah">+</button></div>
-      <button class="btn secondary" id="add" style="flex:1">Tambah ke keranjang</button>
+  <section class="wrap" style="padding-top:24px; padding-bottom:56px; display:flex; flex-wrap:wrap; align-items:center; gap:40px">
+    <div style="flex:1 1 420px; min-width:0; display:flex; flex-direction:column; gap:20px">
+      <div style="display:flex; flex-wrap:wrap; gap:8px">
+        <span style="display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px; background:var(--ink); color:var(--ground); font-size:13px; font-weight:800; letter-spacing:0.08em"><span style="width:8px; height:8px; border-radius:50%; background:#8bc34a; display:inline-block"></span>READY STOCK</span>
+      </div>
+      <h1 class="display" style="margin:0; font-size:clamp(52px, 8vw, 96px); line-height:0.95; color:var(--red); text-shadow:4px 4px 0 var(--ink); letter-spacing:0.01em">CROCO<br>GRANDSON</h1>
+      <p style="margin:0; font-size:19px; line-height:1.55; color:var(--body); max-width:480px">Gambar dari kisah nenek moyang buaya yang terkenal itu</p>
+      <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap">
+        <span id="price" style="font-size:34px; font-weight:800">Rp189.000</span>
+        <span id="surcharge" style="font-size:15px; color:var(--muted); font-weight:600">2XL +Rp15.000 · 3XL +Rp30.000</span>
+      </div>
+      <div style="display:flex; gap:12px; flex-wrap:wrap">
+        <a class="btn btn-red" href="/pesan">Pesan sekarang<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" style="fill:none; stroke:#fff; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-line" href="#cara-beli">Lihat cara beli</a>
+      </div>
     </div>
-    <p class="err" id="addErr"></p>
-
-    <div id="cartBox" class="hidden">
-      <h2>Keranjang</h2>
-      <div class="card" id="cart"></div>
-
-      <h2>Data pengiriman</h2>
-      <form id="form" novalidate>
-        <label for="name">Nama penerima</label>
-        <input id="name" autocomplete="name" required>
-        <label for="phone">Nomor WhatsApp</label>
-        <input id="phone" inputmode="tel" autocomplete="tel" placeholder="08…" required>
-        <label for="address">Alamat lengkap</label>
-        <textarea id="address" autocomplete="street-address" placeholder="Jalan, RT/RW, kelurahan, kecamatan, kota, kode pos" required></textarea>
-        <label for="shipping">Pengiriman</label>
-        <select id="shipping" required></select>
-        <label for="note">Catatan (opsional)</label>
-        <input id="note" maxlength="200">
-
-        <div class="card" style="margin-top:20px">
-          <div class="sum"><span>Subtotal</span><span id="sSub"></span></div>
-          <div class="sum"><span>Ongkir</span><span id="sShip"></span></div>
-          <div class="sum muted"><span>Kode unik (dipakai untuk mencocokkan transfer)</span><span>dibuat otomatis</span></div>
-        </div>
-        <p class="err" id="formErr"></p>
-        <button class="btn" id="submit" style="margin-top:8px">Buat pesanan</button>
-      </form>
+    <div style="flex:1 1 380px; min-width:0; display:flex; justify-content:center">
+      <div style="position:relative; width:100%; max-width:560px; aspect-ratio:1 / 1; border-radius:32px; background:var(--blue); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink); overflow:hidden">
+        <div style="position:absolute; left:-10%; bottom:-30%; width:120%; height:60%; border-radius:50%; background:var(--green); border-top:3px solid var(--ink)"></div>
+        <img src="/img/hitam.jpg" alt="Kaos Croco Grandson warna hitam" style="position:absolute; right:2%; top:8%; width:60%; border-radius:18px; border:3px solid var(--ink); transform:rotate(5deg)">
+        <img src="/img/putih.jpg" alt="Kaos Croco Grandson warna putih" style="position:absolute; left:3%; top:22%; width:60%; border-radius:18px; border:3px solid var(--ink); transform:rotate(-6deg)">
+        <span style="position:absolute; left:18px; top:18px; padding:8px 14px; border-radius:12px; background:var(--yellow); border:2px solid var(--ink); font-weight:800; font-size:14px">Putih &amp; Hitam</span>
+      </div>
     </div>
   </section>
 
-  <!-- ============ HALAMAN STATUS / PEMBAYARAN ============ -->
-  <section id="status" class="hidden stack"></section>
+  <div class="display" aria-hidden="true" style="background:var(--yellow); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); overflow:hidden; white-space:nowrap; padding:14px 0; font-size:22px; letter-spacing:0.04em">READY STOCK ✱ LANGSUNG KIRIM ✱ S – 3XL ✱ PUTIH &amp; HITAM ✱ READY STOCK ✱ LANGSUNG KIRIM ✱ S – 3XL ✱ PUTIH &amp; HITAM ✱ READY STOCK ✱ LANGSUNG KIRIM ✱ S – 3XL ✱ PUTIH &amp; HITAM</div>
+
+  <section id="stok" class="wrap" style="padding-top:64px; padding-bottom:24px; display:flex; flex-direction:column; gap:24px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span class="eyebrow">STOK TERSEDIA</span>
+      <h2 class="display h2">Cek ukuranmu sebelum kehabisan</h2>
+      <p style="margin:0; font-size:16px; color:var(--body)">Coba ngintip dulu stoknya dari sini</p>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:20px">
+      <div style="flex:1 1 340px; min-width:0; background:#fff; border:3px solid var(--ink); border-radius:24px; padding:20px; display:flex; gap:18px; align-items:center; box-shadow:6px 6px 0 var(--ink); flex-wrap:wrap">
+        <img src="/img/putih.jpg" alt="Croco Grandson putih" style="width:110px; height:120px; object-fit:cover; border-radius:14px; background:#d7d7d9">
+        <div style="flex:1 1 200px; display:flex; flex-direction:column; gap:12px">
+          <span style="font-size:20px; font-weight:800">Putih</span>
+          <div id="chips-Putih" style="display:flex; flex-wrap:wrap; gap:8px"><span class="skeleton">Memuat stok…</span></div>
+        </div>
+      </div>
+      <div class="dark" style="flex:1 1 340px; min-width:0; background:var(--ink); color:var(--ground); border:3px solid var(--ink); border-radius:24px; padding:20px; display:flex; gap:18px; align-items:center; box-shadow:6px 6px 0 var(--red); flex-wrap:wrap">
+        <img src="/img/hitam.jpg" alt="Croco Grandson hitam" style="width:110px; height:120px; object-fit:cover; border-radius:14px; background:#d7d7d9">
+        <div style="flex:1 1 200px; display:flex; flex-direction:column; gap:12px">
+          <span style="font-size:20px; font-weight:800">Hitam</span>
+          <div id="chips-Hitam" style="display:flex; flex-wrap:wrap; gap:8px"><span class="skeleton" style="color:#b9b3a6">Memuat stok…</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cara-beli" class="wrap" style="padding-top:56px; padding-bottom:56px; display:flex; flex-direction:column; gap:24px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span class="eyebrow">CARA PEMBELIAN</span>
+      <h2 class="display h2">5 langkah, kaos sampai di rumah</h2>
+    </div>
+    <ol style="list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:16px">
+      <li class="step">
+        <div style="display:flex; align-items:center; justify-content:space-between"><span class="num">1</span><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" style="fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3c-1 1.5-2.4 2-4 2S9 4.5 8 3z"/></svg></div>
+        <strong>Pilih warna &amp; ukuran</strong>
+        <span class="d">Cek panduan ukuran dulu. Ukuran yang habis otomatis tidak bisa dipilih.</span>
+      </li>
+      <li class="step">
+        <div style="display:flex; align-items:center; justify-content:space-between"><span class="num">2</span><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" style="fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></div>
+        <strong>Isi data pengiriman</strong>
+        <span class="d">Nama, nomor WhatsApp, alamat lengkap, dan wilayah kirim.</span>
+      </li>
+      <li class="step">
+        <div style="display:flex; align-items:center; justify-content:space-between"><span class="num">3</span><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" style="fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></div>
+        <strong>Transfer sesuai total</strong>
+        <span class="d">Transfer ke rekening yang disebutkan, tepat sampai 3 digit terakhir (kode unik). Maksimal 24 jam.</span>
+      </li>
+      <li class="step">
+        <div style="display:flex; align-items:center; justify-content:space-between"><span class="num">4</span><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" style="fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 10h6M9 13h4"/></svg></div>
+        <strong>Kirim bukti via WhatsApp</strong>
+        <span class="d">Tombol WhatsApp ada di halaman pesananmu, pesannya sudah terisi.</span>
+      </li>
+      <li class="step" style="background:var(--green)">
+        <div style="display:flex; align-items:center; justify-content:space-between"><span class="num" style="color:var(--ink)">5</span><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" style="fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></div>
+        <strong>Paket dikirim oleh jasa kirim</strong>
+        <span class="d" style="color:#1f2a0e">Nomor resi muncul di link pesananmu. Tinggal tunggu di rumah.</span>
+      </li>
+    </ol>
+  </section>
+
+  <section id="pesan" style="padding:0 24px 56px">
+    <div style="max-width:1152px; margin:0 auto; background:var(--red); border:3px solid var(--ink); border-radius:28px; box-shadow:8px 8px 0 var(--ink); padding:40px 32px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:24px; color:#fff">
+      <div style="flex:1 1 360px; display:flex; flex-direction:column; gap:8px">
+        <h2 class="display" style="margin:0; font-size:clamp(30px, 4vw, 44px); line-height:1.05; text-shadow:3px 3px 0 var(--ink)">Udah nemu ukuranmu?</h2>
+        <p style="margin:0; font-size:17px; color:#ffe9e4">Amankan Croco Grandson sebelum ukuranmu habis.</p>
+      </div>
+      <a class="btn btn-yellow" href="/pesan">Mulai pesan</a>
+      <div style="display:flex; flex-wrap:wrap; gap:12px">
+        <a class="btn btn-ghost" id="waLink" href="https://wa.me/6281228582961" target="_blank" rel="noopener">Tanya admin via WhatsApp</a>
+      </div>
+    </div>
+  </section>
 </main>
 
+<footer class="wrap" style="padding-top:24px; padding-bottom:24px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; font-size:14px; color:var(--muted); border-top:2px solid #e2d9c5">
+  <span class="display" style="color:var(--ink)">ABG SINIAR</span>
+</footer>
+
 <script>
-const $ = (id) => document.getElementById(id);
 const rp = (n) => "Rp" + Number(n).toLocaleString("id-ID");
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-const COLOR_HEX = { Putih: "#ffffff", Hitam: "#1a1a1a" };
-const shirt = (fill) => `<svg viewBox="0 0 200 200"><path d="M70 20 L40 30 L10 60 L30 85 L50 72 L50 185 L150 185 L150 72 L170 85 L190 60 L160 30 L130 20 C125 38 75 38 70 20 Z" fill="${fill}" stroke="#999" stroke-width="2"/></svg>`;
-
-let S = { config:null, variants:[], color:null, size:null, qty:1, cart:[] };
-try { S.cart = JSON.parse(localStorage.getItem("cart") || "[]"); } catch {}
-const saveCart = () => { try { localStorage.setItem("cart", JSON.stringify(S.cart)); } catch {} };
-
-async function api(path, opts) {
-  const r = await fetch(path, opts);
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.error || "Terjadi kesalahan, coba lagi.");
-  return d;
-}
-
-async function loadStore() {
-  const d = await api("/api/store");
-  S.config = d.config; S.variants = d.variants;
-  // buang item keranjang yang variannya tidak ada
-  S.cart = S.cart.filter((c) => S.variants.some((v) => v.id === c.id));
-  if (!S.color) S.color = S.config.images && Object.keys(S.config.images)[0] || S.variants[0].color;
-}
-
-const variant = (color, size) => S.variants.find((v) => v.color === color && v.size === size);
-const inCart = (id) => S.cart.filter((c) => c.id === id).reduce((s, c) => s + c.qty, 0);
-
-function renderShop() {
-  const c = S.config;
-  document.title = c.productName;
-  $("pname").textContent = c.productName;
-  const sel = S.size && variant(S.color, S.size);
-  $("pprice").textContent = rp(sel ? sel.price : c.price) + (sel ? ` · ukuran ${sel.size}` : "");
-  const extras = Object.entries(c.sizeSurcharge || {});
-  $("psurcharge").textContent = extras.length ? "Ukuran " + extras.map(([sz, n]) => `${sz} +${rp(n)}`).join(" · ") : "";
-  $("pdesc").textContent = c.description;
-  const sc = c.sizeChart;
-  $("sizechart").classList.toggle("hidden", !(sc && sc.rows));
-  if (sc && sc.rows) {
-    $("sizechartBody").innerHTML = `<table><thead><tr><th>Ukuran</th>${sc.columns.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>` +
-      Object.entries(sc.rows).map(([sz, vals]) => `<tr class="${sz === S.size ? "sel" : ""}"><td>${esc(sz)}</td>${vals.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>`).join("") +
-      `</tbody></table>`;
+fetch("/api/store").then((r) => r.json()).then(({ config: c, variants }) => {
+  document.getElementById("price").textContent = rp(c.price);
+  const ex = Object.entries(c.sizeSurcharge || {});
+  document.getElementById("surcharge").textContent = ex.map(([s, n]) => `${s} +${rp(n)}`).join(" · ");
+  document.getElementById("waLink").href = `https://wa.me/${c.adminWa}?text=${encodeURIComponent("Halo admin ABG Siniar, saya mau tanya soal kaos " + c.productName + ".")}`;
+  for (const color of ["Putih", "Hitam"]) {
+    const box = document.getElementById("chips-" + color);
+    if (!box) continue;
+    box.innerHTML = variants.filter((v) => v.color === color).map((v) => {
+      const href = `/pesan?warna=${encodeURIComponent(v.color)}&ukuran=${encodeURIComponent(v.size)}`;
+      if (v.stock <= 0) return `<span class="chip out" aria-label="${esc(v.size)} habis"><b>${esc(v.size)}</b><small>Habis</small></span>`;
+      if (v.stock <= c.lowStock) return `<a class="chip low" href="${href}"><b>${esc(v.size)}</b><small>Sisa ${v.stock}</small></a>`;
+      return `<a class="chip ok" href="${href}"><b>${esc(v.size)}</b><small>Tersedia</small></a>`;
+    }).join("");
   }
-
-  const img = c.images?.[S.color];
-  $("photo").innerHTML = img ? `<img src="${esc(img)}" alt="${esc(c.productName)} ${esc(S.color)}">` : shirt(COLOR_HEX[S.color] || "#ccc");
-  const im = $("photo").querySelector("img");
-  if (im) im.onerror = () => { $("photo").innerHTML = shirt(COLOR_HEX[S.color] || "#ccc"); };
-
-  const colors = [...new Set(S.variants.map((v) => v.color))];
-  $("colors").innerHTML = colors.map((col) => {
-    const any = S.variants.some((v) => v.color === col && v.stock > 0);
-    return `<button class="opt" data-color="${esc(col)}" aria-pressed="${col === S.color}">
-      <span class="swatch" style="background:${COLOR_HEX[col] || "#ccc"}"></span>${esc(col)}${any ? "" : "<small>Habis</small>"}</button>`;
-  }).join("");
-
-  const sizes = S.variants.filter((v) => v.color === S.color);
-  if (S.size && !(variant(S.color, S.size)?.stock > 0)) S.size = null;
-  $("sizes").innerHTML = sizes.map((v) => {
-    const left = v.stock - inCart(v.id);
-    const extra = v.price > c.price ? `<small class="extra">+${Math.round((v.price - c.price) / 1000)}rb</small>` : "";
-    const label = extra + (v.stock <= 0 ? "<small>Habis</small>" : v.stock <= c.lowStock ? `<small>Sisa ${v.stock}</small>` : "");
-    return `<button class="opt" data-size="${esc(v.size)}" aria-pressed="${v.size === S.size}" ${v.stock <= 0 ? "disabled" : ""}>${esc(v.size)}${label}</button>`;
-  }).join("");
-  $("qty").textContent = S.qty;
-
-  $("shipping").innerHTML = `<option value="">Pilih…</option>` +
-    c.shipping.map((s) => `<option value="${esc(s.id)}">${esc(s.label)} — ${s.cost ? rp(s.cost) : "gratis"}</option>`).join("");
-  renderCart();
-}
-
-function renderCart() {
-  $("cartBox").classList.toggle("hidden", !S.cart.length);
-  $("cart").innerHTML = S.cart.map((c, i) => {
-    const v = S.variants.find((x) => x.id === c.id);
-    return `<div class="cart-item"><div><b>${esc(v.color)} · ${esc(v.size)}</b><div class="muted">${c.qty} × ${rp(v.price)}</div></div>
-      <div style="text-align:right"><b>${rp(c.qty * v.price)}</b><br><button class="x" data-rm="${i}">hapus</button></div></div>`;
-  }).join("");
-  const sub = S.cart.reduce((s, c) => s + c.qty * S.variants.find((x) => x.id === c.id).price, 0);
-  const ship = S.config.shipping.find((s) => s.id === $("shipping").value);
-  $("sSub").textContent = rp(sub);
-  $("sShip").textContent = ship ? (ship.cost ? rp(ship.cost) : "gratis") : "—";
-}
-
-document.addEventListener("click", (e) => {
-  const col = e.target.closest("[data-color]");
-  if (col) { S.color = col.dataset.color; S.qty = 1; renderShop(); return; }
-  const sz = e.target.closest("[data-size]");
-  if (sz && !sz.disabled) { S.size = sz.dataset.size; S.qty = 1; $("addErr").textContent = ""; renderShop(); return; }
-  const rm = e.target.closest("[data-rm]");
-  if (rm) { S.cart.splice(Number(rm.dataset.rm), 1); saveCart(); renderShop(); }
+}).catch(() => {
+  for (const color of ["Putih", "Hitam"]) {
+    const box = document.getElementById("chips-" + color);
+    if (box) box.innerHTML = `<a class="chip ok" href="/pesan">Lihat stok di halaman pesan</a>`;
+  }
 });
-$("minus").onclick = () => { S.qty = Math.max(1, S.qty - 1); $("qty").textContent = S.qty; };
-$("plus").onclick = () => { S.qty = Math.min(S.config.maxQtyPerVariant, S.qty + 1); $("qty").textContent = S.qty; };
-$("shipping").onchange = renderCart;
-
-$("add").onclick = () => {
-  $("addErr").textContent = "";
-  if (!S.size) { $("addErr").textContent = "Pilih ukuran dulu."; return; }
-  const v = variant(S.color, S.size);
-  const want = inCart(v.id) + S.qty;
-  if (want > v.stock) { $("addErr").textContent = `Stok ${v.color} ${v.size} tinggal ${v.stock}.`; return; }
-  if (want > S.config.maxQtyPerVariant) { $("addErr").textContent = `Maksimal ${S.config.maxQtyPerVariant} pcs per varian.`; return; }
-  const ex = S.cart.find((c) => c.id === v.id);
-  ex ? (ex.qty += S.qty) : S.cart.push({ id: v.id, qty: S.qty });
-  saveCart(); S.qty = 1; renderShop();
-  $("cartBox").scrollIntoView({ behavior: "smooth" });
-};
-
-$("form").onsubmit = async (e) => {
-  e.preventDefault();
-  $("formErr").textContent = "";
-  const btn = $("submit"); btn.disabled = true; btn.textContent = "Memproses…";
-  try {
-    const d = await api("/api/checkout", {
-      method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        items: S.cart, name: $("name").value, phone: $("phone").value,
-        address: $("address").value, shipping: $("shipping").value, note: $("note").value,
-      }),
-    });
-    S.cart = []; saveCart();
-    try { localStorage.setItem("lastOrder", d.code); } catch {}
-    history.pushState(null, "", "?order=" + d.code);
-    await showStatus(d.code);
-  } catch (err) {
-    $("formErr").textContent = err.message;
-    await loadStore().then(renderShop).catch(() => {});
-  } finally { btn.disabled = false; btn.textContent = "Buat pesanan"; }
-};
-
-let timer;
-async function showStatus(code) {
-  if (!S.config) await loadStore();
-  const o = await api("/api/order/" + encodeURIComponent(code));
-  const c = S.config;
-  $("shop").classList.add("hidden");
-  const el = $("status"); el.classList.remove("hidden");
-  const label = { pending:"Menunggu pembayaran", paid:"Pembayaran diterima", shipped:"Sudah dikirim", expired:"Kedaluwarsa", cancelled:"Dibatalkan" }[o.status];
-  const items = o.items.map((i) => `${i.qty}× ${esc(i.color)} ${esc(i.size)}`).join(", ");
-  const totalStr = o.total.toLocaleString("id-ID");
-  const head = totalStr.slice(0, -3), tail = totalStr.slice(-3);
-  const waText = `Halo, saya sudah transfer untuk pesanan ${o.code} sebesar ${rp(o.total)}. Berikut bukti transfernya:`;
-  const waLink = `https://wa.me/${c.adminWa}?text=${encodeURIComponent(waText)}`;
-
-  let body = `
-    <div><span class="badge b-${o.status}">${label}</span></div>
-    <h1>Pesanan ${esc(o.code)}</h1>
-    <p class="muted">${items}</p>`;
-
-  if (o.status === "pending") {
-    body += `
-    <div class="card stack">
-      <div class="muted">Transfer tepat sebesar</div>
-      <div class="big">Rp${head}<span class="u">${tail}</span> <button class="copy" data-copy="${o.total}">salin</button></div>
-      <div class="muted" style="font-size:13px">Termasuk kode unik <b>${o.unique_code}</b> supaya transfer Anda cepat dikenali. Mohon jangan dibulatkan.</div>
-      <div style="border-top:1px solid var(--line);padding-top:12px">
-        <div class="muted">${esc(c.bank.name)} a.n. ${esc(c.bank.holder)}</div>
-        <div class="big" style="font-size:24px">${esc(c.bank.number)} <button class="copy" data-copy="${esc(c.bank.number)}">salin</button></div>
-      </div>
-      <div class="notice">Bayar sebelum <b id="deadline"></b> (<span id="countdown"></span>). Lewat dari itu pesanan otomatis batal.</div>
-    </div>
-    <a class="btn wa" href="${waLink}" target="_blank" rel="noopener">Kirim bukti transfer via WhatsApp</a>`;
-  } else if (o.status === "paid") {
-    body += `<div class="card">Terima kasih! Pembayaran sudah kami terima. Pesanan sedang dikemas dan nomor resi akan muncul di halaman ini.</div>`;
-  } else if (o.status === "shipped") {
-    body += `<div class="card stack"><div class="muted">Kurir</div><div><b>${esc(o.courier)}</b></div>
-      <div class="muted">Nomor resi</div><div class="big" style="font-size:22px">${esc(o.resi)} <button class="copy" data-copy="${esc(o.resi)}">salin</button></div></div>`;
-  } else {
-    body += `<div class="card">Pesanan ini sudah tidak aktif. Kalau Anda sudah transfer, hubungi kami lewat WhatsApp.</div>
-      <a class="btn wa" href="https://wa.me/${c.adminWa}?text=${encodeURIComponent("Halo, saya mau tanya pesanan " + o.code)}" target="_blank" rel="noopener">Hubungi kami</a>`;
-  }
-  body += `
-    <div class="card">
-      <div class="sum"><span>Subtotal</span><span>${rp(o.subtotal)}</span></div>
-      <div class="sum"><span>Ongkir (${esc(o.shipping_label)})</span><span>${o.shipping_cost ? rp(o.shipping_cost) : "gratis"}</span></div>
-      <div class="sum"><span>Kode unik</span><span>${rp(o.unique_code)}</span></div>
-      <div class="sum total"><span>Total</span><span>${rp(o.total)}</span></div>
-    </div>
-    <p class="muted" style="font-size:13px">Simpan link halaman ini untuk cek status pesanan kapan saja.</p>
-    <a class="btn secondary" href="/">Belanja lagi</a>`;
-  el.innerHTML = body;
-
-  clearInterval(timer);
-  if (o.status === "pending") {
-    $("deadline").textContent = new Date(o.expires_at).toLocaleString("id-ID", { dateStyle:"medium", timeStyle:"short" });
-    const tick = () => {
-      const ms = o.expires_at - Date.now();
-      if (ms <= 0) { clearInterval(timer); showStatus(code); return; }
-      const h = Math.floor(ms / 36e5), m = Math.floor(ms % 36e5 / 6e4);
-      $("countdown").textContent = `sisa ${h} jam ${m} menit`;
-    };
-    tick(); timer = setInterval(tick, 30000);
-  }
-  window.scrollTo(0, 0);
-}
-
-document.addEventListener("click", async (e) => {
-  const b = e.target.closest("[data-copy]");
-  if (!b) return;
-  try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "tersalin"; setTimeout(() => (b.textContent = "salin"), 1500); } catch {}
-});
-
-async function route() {
-  $("loading").classList.add("hidden");
-  const code = new URLSearchParams(location.search).get("order");
-  try {
-    if (code) { await showStatus(code); }
-    else {
-      $("status").classList.add("hidden");
-      await loadStore(); renderShop(); $("shop").classList.remove("hidden");
-    }
-  } catch (err) {
-    $("status").classList.remove("hidden");
-    $("status").innerHTML = `<div class="card">${esc(err.message)}</div><a class="btn secondary" href="/">Kembali ke toko</a>`;
-  }
-}
-window.onpopstate = route;
-route();
 </script>
 </body>
 </html>

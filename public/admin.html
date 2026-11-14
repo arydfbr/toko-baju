@@ -121,7 +121,7 @@ async function load() {
 // ---------- template pesan WhatsApp ----------
 function waLink(o) {
   const c = D.config, items = o.items.map((i) => `${i.qty}x ${i.color} ${i.size}`).join(", ");
-  const link = `${location.origin}/?order=${o.code}`;
+  const link = `${location.origin}/pesan?order=${o.code}`;
   let t;
   if (o.status === "pending")
     t = `Halo ${o.name}, terima kasih sudah order ${c.productName}.\n\nPesanan: ${o.code}\n${items}\nTotal: ${rp(o.total)} (mohon transfer tepat, termasuk kode unik)\n\nTransfer ke ${c.bank.name} ${c.bank.number} a.n. ${c.bank.holder}\nBatas bayar: ${dt(o.expires_at)}\n\nDetail: ${link}`;
