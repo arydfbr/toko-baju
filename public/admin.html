@@ -118,6 +118,31 @@ async function load() {
   render();
 }
 
+// Buka tab kosong langsung saat diklik (agar tidak diblokir sebagai pop-up), isi alamatnya setelah data siap
+function openLater() {
+  const w = window.open("about:blank", "_blank");
+  return {
+    go(url) {
+      if (!w) { window.location.href = url; return; }   // pop-up diblokir browser: buka di tab ini
+      if (!w.closed) w.location.href = url;              // tab ditutup admin: jangan pindahkan dashboard
+    },
+    close() { if (w && !w.closed) w.close(); },
+  };
+}
+
+// Simpan resi yang sudah diketik di kartu (kalau ada & berbeda) sebelum pesan WA dibuat
+async function saveTypedResi(code) {
+  const o = D.orders.find((x) => x.code === code);
+  const f = document.querySelector(`[data-ship="${code}"]`);
+  if (!o || !f || !["paid", "shipped"].includes(o.status)) return false;
+  const courier = f.courier.value.trim(), resi = f.resi.value.trim();
+  if (!courier && !resi) return false;
+  if (!courier || !resi) throw new Error("Lengkapi nama kurir dan nomor resi dulu.");
+  if (o.status === "shipped" && courier === (o.courier || "") && resi === (o.resi || "")) return false;
+  await api("/api/admin/order", { code, action: "ship", courier, resi });
+  return true;
+}
+
 // ---------- template pesan WhatsApp ----------
 function waLink(o) {
   const c = D.config, items = o.items.map((i) => `${i.qty}x ${i.color} ${i.size}`).join(", ");
@@ -126,9 +151,9 @@ function waLink(o) {
   if (o.status === "pending")
     t = `Halo ${o.name}, terima kasih sudah order ${c.productName}.\n\nPesanan: ${o.code}\n${items}\nTotal: ${rp(o.total)} (mohon transfer tepat, termasuk kode unik)\n\nTransfer ke ${c.bank.name} ${c.bank.number} a.n. ${c.bank.holder}\nBatas bayar: ${dt(o.expires_at)}\n\nDetail: ${link}`;
   else if (o.status === "paid")
-    t = `Halo ${o.name}, pembayaran pesanan ${o.code} sebesar ${rp(o.total)} sudah kami terima. Pesanan segera kami kemas dan kirim. Terima kasih!`;
+    t = `Halo ${o.name}, pembayaran pesanan ${o.code} sebesar ${rp(o.total)} sudah kami terima. Pesanan segera kami kemas dan kirim. Terima kasih!\n\nLacak status transaksi Anda di sini: ${link}`;
   else if (o.status === "shipped")
-    t = `Halo ${o.name}, pesanan ${o.code} sudah dikirim via ${o.courier}.\nNo. resi: ${o.resi}\n\nCek status: ${link}\nTerima kasih sudah belanja!`;
+    t = `Halo ${o.name}, pesanan ${o.code} sudah dikirim via ${o.courier}.\nNo. resi: ${o.resi}\n\nLacak status transaksi Anda di sini: ${link}\nTerima kasih sudah belanja!`;
   else
     t = `Halo ${o.name}, terkait pesanan ${o.code}…`;
   return `https://wa.me/${o.phone}?text=${encodeURIComponent(t)}`;
@@ -171,7 +196,7 @@ function renderOrders() {
 function orderCard(o) {
   const t = o.total.toLocaleString("id-ID");
   const items = o.items.map((i) => `${i.qty}× ${esc(i.color)} ${esc(i.size)}`).join(" · ");
-  let actions = `<a class="btn wa" href="${waLink(o)}" target="_blank" rel="noopener">WA pembeli</a>`;
+  let actions = `<button class="btn wa" data-wa="${o.code}">WA pembeli</button>`;
   if (o.status === "pending") actions = `<button class="btn ok" data-act="paid" data-code="${o.code}">✓ Tandai lunas</button>` + actions + `<button class="btn danger" data-act="cancel" data-code="${o.code}">Batalkan</button>`;
   if (o.status === "expired") actions = `<button class="btn ok" data-act="paid" data-code="${o.code}">Ternyata sudah bayar</button>` + actions;
   if (o.status === "paid") actions += `<button class="btn ghost" data-copyaddr="${o.code}">Salin alamat</button><button class="btn danger" data-act="cancel" data-code="${o.code}">Batalkan</button>`;
@@ -243,15 +268,30 @@ document.addEventListener("click", async (e) => {
     const msg = a.dataset.act === "cancel" ? `Batalkan pesanan ${a.dataset.code}? Stok akan dikembalikan.` : `Tandai ${a.dataset.code} sudah lunas? Pastikan dana sudah masuk ke rekening.`;
     if (!confirm(msg)) return;
     a.disabled = true;
+    const win = a.dataset.act === "paid" ? openLater() : null;
     try {
       await api("/api/admin/order", { code: a.dataset.code, action: a.dataset.act });
       await load();
       if (a.dataset.act === "paid") {
         const o = D.orders.find((x) => x.code === a.dataset.code);
         toast("Lunas ✓ — kirim konfirmasi ke pembeli");
-        if (o) window.open(waLink(o), "_blank");
+        o ? win.go(waLink(o)) : win.close();
       } else toast("Pesanan dibatalkan");
-    } catch (err) { toast(err.message); a.disabled = false; }
+    } catch (err) { if (win) win.close(); toast(err.message); a.disabled = false; }
+    return;
+  }
+
+  const wb = e.target.closest("[data-wa]");
+  if (wb) {
+    const code = wb.dataset.wa;
+    const win = openLater();
+    wb.disabled = true;
+    try {
+      if (await saveTypedResi(code)) { await load(); toast("Resi tersimpan"); }
+      const o = D.orders.find((x) => x.code === code);
+      o ? win.go(waLink(o)) : win.close();
+    } catch (err) { win.close(); toast(err.message); }
+    finally { wb.disabled = false; }
     return;
   }
 
@@ -277,13 +317,15 @@ document.addEventListener("submit", async (e) => {
   if (!f) return;
   e.preventDefault();
   const code = f.dataset.ship;
+  const win = openLater();
   try {
     await api("/api/admin/order", { code, action: "ship", courier: f.courier.value, resi: f.resi.value });
+    tab = "shipped"; q = "";
     await load();
     const o = D.orders.find((x) => x.code === code);
-    toast("Resi tersimpan — kirim ke pembeli");
-    if (o) window.open(waLink(o), "_blank");
-  } catch (err) { toast(err.message); }
+    toast("Resi tersimpan — pesanan pindah ke tab Dikirim");
+    o ? win.go(waLink(o)) : win.close();
+  } catch (err) { win.close(); toast(err.message); }
 });
 
 KEY ? load().catch(() => logout()) : logout();
