@@ -50,6 +50,15 @@
   .b-pending { background:#fff1e6; color:var(--warn); } .b-paid { background:#e6f4ec; color:var(--ok); }
   .b-shipped { background:#e7eefc; color:#2350b8; } .b-expired, .b-cancelled { background:#eee; color:#666; }
   .stack > * + * { margin-top:12px; }
+  .sizechart { margin-top:12px; font-size:13px; }
+  .sizechart summary { cursor:pointer; font-weight:600; color:var(--ink); padding:6px 0; }
+  .sc-wrap { overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:12px; margin-top:6px; }
+  .sc-wrap table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+  .sc-wrap th, .sc-wrap td { padding:8px 6px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap; }
+  .sc-wrap th { font-size:11px; color:var(--muted); font-weight:600; }
+  .sc-wrap td:first-child, .sc-wrap th:first-child { text-align:left; padding-left:12px; font-weight:700; color:var(--ink); }
+  .sc-wrap tr:last-child td { border-bottom:0; }
+  .sc-wrap tr.sel td { background:#fff1e6; }
   .hidden { display:none !important; }
   .notice { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px; font-size:14px; }
 </style>
@@ -71,7 +80,7 @@
 
     <h2>Ukuran</h2>
     <div class="opts" id="sizes"></div>
-    <p class="muted" id="sizechart" style="font-size:12px"></p>
+    <details id="sizechart" class="sizechart"><summary>Panduan ukuran (cm)</summary><div class="sc-wrap" id="sizechartBody"></div></details>
 
     <div class="row" style="margin-top:18px">
       <div class="qty"><button id="minus" aria-label="Kurangi">−</button><span id="qty">1</span><button id="plus" aria-label="Tambah">+</button></div>
@@ -149,7 +158,13 @@ function renderShop() {
   const extras = Object.entries(c.sizeSurcharge || {});
   $("psurcharge").textContent = extras.length ? "Ukuran " + extras.map(([sz, n]) => `${sz} +${rp(n)}`).join(" · ") : "";
   $("pdesc").textContent = c.description;
-  $("sizechart").textContent = c.sizeChart || "";
+  const sc = c.sizeChart;
+  $("sizechart").classList.toggle("hidden", !(sc && sc.rows));
+  if (sc && sc.rows) {
+    $("sizechartBody").innerHTML = `<table><thead><tr><th>Ukuran</th>${sc.columns.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>` +
+      Object.entries(sc.rows).map(([sz, vals]) => `<tr class="${sz === S.size ? "sel" : ""}"><td>${esc(sz)}</td>${vals.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>`).join("") +
+      `</tbody></table>`;
+  }
 
   const img = c.images?.[S.color];
   $("photo").innerHTML = img ? `<img src="${esc(img)}" alt="${esc(c.productName)} ${esc(S.color)}">` : shirt(COLOR_HEX[S.color] || "#ccc");
