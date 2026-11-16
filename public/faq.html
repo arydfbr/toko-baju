@@ -58,7 +58,7 @@
     <h1 class="display" style="margin:0; font-size:clamp(40px, 7vw, 64px); line-height:1; color:var(--red); text-shadow:3px 3px 0 var(--ink)">Pertanyaan yang<br>sering ditanyakan</h1>
     <p style="margin:0; font-size:17px; color:var(--body)">Belum ketemu jawabannya? Tanya admin langsung lewat WhatsApp di bagian paling bawah.</p>
     <nav class="toc" aria-label="Kategori FAQ" style="margin-top:8px">
-      <a href="#produk">Produk &amp; stok</a><a href="#memesan">Cara memesan</a><a href="#pembayaran">Pembayaran</a><a href="#pengiriman">Pengiriman</a><a href="#refund">Refund</a>
+      <a href="#produk">Produk &amp; stok</a><a href="#memesan">Cara memesan</a><a href="#pembayaran">Pembayaran</a><a href="#pengiriman">Pengiriman</a><a href="#penukaran">Tukar &amp; refund</a><a href="#kontak">Jam operasional</a>
     </nav>
   </div>
 
@@ -93,9 +93,19 @@
     <details><summary>Bagaimana cara pesannya?</summary><div class="ans"><ol>
       <li>Buka <a href="/pesan">halaman pemesanan</a>.</li>
       <li>Pilih warna, ukuran, dan jumlah.</li>
-      <li>Isi nama, nomor WhatsApp, alamat lengkap, dan wilayah pengiriman. Ongkir langsung muncul sesuai wilayah yang kamu pilih.</li>
+      <li>Isi nama, nomor WhatsApp, alamat lengkap, dan wilayah pengiriman. Ongkir langsung muncul sesuai wilayah yang kamu pilih. Pastikan nomor WhatsApp yang kamu tulis benar dan aktif.</li>
       <li>Klik pesan. Kamu akan diarahkan ke halaman pembayaran berisi total yang harus ditransfer dan nomor rekening tujuan.</li>
     </ol></div></details>
+    <details><summary>Kenapa nomor WhatsApp harus benar?</summary><div class="ans">
+      <p>Semua kabar soal pesananmu dikirim lewat WhatsApp: konfirmasi pembayaran lunas, nomor resi J&amp;T, dan permintaan bukti transfer kalau dibutuhkan. Kalau nomornya salah atau tidak aktif, kabar itu tidak sampai ke kamu, dan admin juga kesulitan menghubungimu soal pesanan.</p>
+      <p>Sebelum klik pesan, cek lagi:</p>
+      <ul style="margin:0 0 10px; padding-left:20px">
+        <li>Nomornya benar, tidak ada angka yang kurang atau tertukar.</li>
+        <li>Nomornya aktif dan terdaftar di WhatsApp.</li>
+        <li>Nomornya milikmu, atau milik orang yang bisa dihubungi soal pesanan ini.</li>
+      </ul>
+      <p>Kalau ternyata salah tulis, segera hubungi admin lewat WhatsApp dengan menyebutkan nomor pesananmu.</p>
+    </div></details>
     <details><summary>Bisa beli lebih dari satu, atau beda warna sekaligus?</summary><div class="ans"><p>Bisa. Tambahkan beberapa varian dalam satu pesanan, dan ongkirnya dihitung sekali untuk satu alamat.</p></div></details>
     <details><summary>Saya sudah klik pesan. Apakah kaosnya sudah pasti untuk saya?</summary><div class="ans"><p>Ya, untuk sementara. Begitu kamu klik pesan, stok kaosmu langsung dikunci sehingga tidak bisa dibeli orang lain. Kunci ini berlaku selama <b>24 jam</b> sambil menunggu pembayaranmu.</p></div></details>
     <details><summary>Bagaimana cara melihat status pesanan saya?</summary><div class="ans"><p>Simpan link halaman pembayaran yang muncul setelah kamu memesan. Halaman itu menunjukkan status pesananmu: menunggu pembayaran, lunas, atau sudah dikirim.</p></div></details>
@@ -107,7 +117,7 @@
     <details><summary>Pembayarannya lewat apa?</summary><div class="ans"><p><b>Transfer bank manual</b> ke rekening yang tertera di halaman pembayaran.</p><p>Saat ini belum tersedia COD, QRIS, atau dompet digital.</p></div></details>
     <details><summary>Kenapa totalnya ada angka ganjil di belakang, misalnya Rp465.053?</summary><div class="ans"><p>Tiga digit terakhir itu <b>kode unik</b> pesananmu. Kode ini membantu admin mencocokkan transferanmu dengan pesanan yang benar, tanpa perlu bukti transfer.</p></div></details>
     <details><summary>Harus transfer persis sampai tiga digit terakhir?</summary><div class="ans"><p><b>Ya, wajib persis.</b> Kalau nominalnya dibulatkan, pembayaranmu sulit dikenali dan konfirmasinya bisa terlambat.</p></div></details>
-    <details><summary>Perlu kirim bukti transfer?</summary><div class="ans"><p>Tidak wajib. Admin mengecek mutasi rekening dan mencocokkannya lewat kode unik. Kalau dalam <b>1×24 jam</b> belum ada konfirmasi, kirim bukti transfer ke WhatsApp admin.</p></div></details>
+    <details><summary>Perlu kirim bukti transfer?</summary><div class="ans"><p>Tidak wajib. Admin mengecek mutasi rekening dan mencocokkannya lewat kode unik. Kalau dalam <b>1×24 jam</b> belum ada konfirmasi, kirim bukti transfer ke WhatsApp admin. Jika dibutuhkan, admin akan meminta bukti transfer melalui WhatsApp.</p></div></details>
     <details><summary>Berapa lama pembayaran saya dikonfirmasi?</summary><div class="ans"><p>Pembayaran dicek manual oleh admin pada <b>jam operasional</b>. Setelah dikonfirmasi, kamu menerima pesan WhatsApp bahwa pesananmu sudah lunas.</p></div></details>
     <details><summary>Apa yang terjadi kalau saya tidak membayar dalam 24 jam?</summary><div class="ans"><p>Pesanan <b>otomatis batal</b> dan stoknya dilepas kembali supaya bisa dibeli orang lain. Kalau masih mau, silakan pesan ulang.</p></div></details>
     <details><summary>Saya sudah transfer, tapi pesanan saya keburu batal. Bagaimana?</summary><div class="ans"><p>Jangan khawatir, segera hubungi admin lewat WhatsApp. Kalau stok varian pilihanmu masih ada, pesananmu tetap diproses. Kalau sudah habis, admin akan menawarkan ganti warna atau ukuran, atau mengembalikan uangmu.</p></div></details>
@@ -117,15 +127,37 @@
     <h2 class="display">Pengiriman</h2>
     <details><summary>Pakai kurir apa?</summary><div class="ans"><p>Semua pesanan dikirim lewat <b>J&amp;T Express</b>. Saat ini belum ada pilihan kurir lain.</p></div></details>
     <details><summary>Berapa ongkirnya?</summary><div class="ans"><p>Ongkir mengikuti wilayah pengiriman yang kamu pilih dan langsung tampil saat kamu memesan, sebelum membayar.</p></div></details>
-    <details><summary>Kapan pesanan saya dikirim?</summary><div class="ans"><p><b>1 hari setelah pesanan dikonfirmasi.</b></p></div></details>
+    <details><summary>Kapan pesanan saya dikirim?</summary><div class="ans"><p>Pesanan yang dikonfirmasi <b>sebelum pukul 14.00</b> dikirim di <b>hari yang sama</b>. Selebihnya dikirim <b>paling lambat 1 hari</b> setelah pesanan dikonfirmasi.</p></div></details>
     <details><summary>Bagaimana saya tahu nomor resinya?</summary><div class="ans"><p>Setelah paket dikirim, admin mengirim nomor resi J&amp;T ke WhatsApp kamu. Paketnya bisa dilacak di situs atau aplikasi J&amp;T Express.</p></div></details>
     <details><summary>Bisa kirim ke luar negeri?</summary><div class="ans"><p><b>Belum bisa nih, hiks.</b></p></div></details>
     <details><summary>Paket saya belum sampai atau hilang.</summary><div class="ans"><p>Cek dulu status resi di J&amp;T. Kalau statusnya tidak bergerak lebih dari <b>3 hari</b>, hubungi admin dan kami bantu menindaklanjutinya ke J&amp;T.</p></div></details>
   </section>
 
-  <section class="group" id="refund">
-    <h2 class="display">Refund</h2>
-    <details><summary>Bisa minta refund?</summary><div class="ans"><p><b>Refund hanya diperbolehkan ketika stok pengganti habis, atau pesanan terlanjur batal setelah transfer namun tidak ada stok lain.</b> Silakan chat admin WhatsApp.</p></div></details>
+  <section class="group" id="penukaran">
+    <h2 class="display">Penukaran dan pengembalian</h2>
+    <details><summary>Ukurannya tidak pas. Bisa tukar?</summary><div class="ans"><p>Bisa. Kaos bisa ditukar dalam <b>3 hari setelah barang diterima</b>, selama stok tersedia, kondisinya <b>belum dicuci</b> dan <b>label masih terpasang</b>. Ongkir penukaran ditanggung pembeli.</p></div></details>
+    <details><summary>Kaos yang saya terima cacat atau salah kirim.</summary><div class="ans"><p>Hubungi admin paling lambat <b>2 hari setelah paket diterima</b>. Sertakan foto kaos dan <b>video unboxing</b> sebagai bukti. Solusinya, barang pengganti akan dikirim dan <b>ongkir ditanggung toko</b>.</p></div></details>
+    <details><summary>Bisa minta refund?</summary><div class="ans"><p>Refund hanya diperbolehkan ketika stok pengganti habis, atau pesanan terlanjur batal setelah transfer namun tidak ada stok lain. Silakan chat admin lewat WhatsApp.</p></div></details>
+  </section>
+
+  <section class="group" id="kontak">
+    <h2 class="display">Kontak admin</h2>
+    <details><summary>Kapan jam operasional admin?</summary><div class="ans">
+      <p>Toko online buka <b>24 jam</b>, jadi kamu bisa memesan kapan saja. Pengecekan pembayaran, balasan chat, dan pengiriman dilakukan pada jam operasional berikut (WIB):</p>
+      <div class="tbl" style="max-width:360px"><table>
+        <thead><tr><th>Hari</th><th>Jam operasional</th></tr></thead>
+        <tbody>
+          <tr><td>Senin</td><td>09.00 – 17.00</td></tr>
+          <tr><td>Selasa</td><td>09.00 – 17.00</td></tr>
+          <tr><td>Rabu</td><td>09.00 – 17.00</td></tr>
+          <tr><td>Kamis</td><td>09.00 – 17.00</td></tr>
+          <tr><td>Jumat</td><td>09.00 – 17.00</td></tr>
+          <tr><td>Sabtu</td><td>09.00 – 14.00</td></tr>
+          <tr><td>Minggu</td><td>10.00 – 15.00</td></tr>
+        </tbody>
+      </table></div>
+      <p>Pesanan dan chat yang masuk di luar jam operasional diproses pada jam operasional berikutnya. Pada hari libur nasional, jam operasional bisa berubah dan akan diumumkan di Instagram <b>@abg.siniar</b>.</p>
+    </div></details>
   </section>
 
   <section style="padding-top:48px">
