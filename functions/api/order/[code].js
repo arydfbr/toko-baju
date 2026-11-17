@@ -6,7 +6,7 @@ export async function onRequestGet({ params, env }) {
   await releaseExpired(db);
   const o = await db
     .prepare(
-      `SELECT id, code, status, subtotal, shipping_label, shipping_cost, unique_code, total,
+      `SELECT id, code, status, subtotal, shipping_id, shipping_label, shipping_cost, unique_code, total,
               expires_at, courier, resi, created_at FROM orders WHERE code = ?`
     )
     .bind(String(params.code || "").toUpperCase())

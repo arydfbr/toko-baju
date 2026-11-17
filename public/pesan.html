@@ -192,8 +192,14 @@ function renderShop() {
   }).join("");
   $("qty").textContent = S.qty;
 
-  $("shipping").innerHTML = `<option value="">Pilih…</option>` +
-    c.shipping.map((s) => `<option value="${esc(s.id)}">${esc(s.label)} — ${s.cost ? rp(s.cost) : "gratis"}</option>`).join("");
+  const prevShip = $("shipping").value;
+  const shipOpt = (s) => `<option value="${esc(s.id)}">${esc(s.label)}${s.tbd ? "" : " — " + (s.cost ? rp(s.cost) : "gratis")}</option>`;
+  const groups = [...new Set(c.shipping.filter((s) => s.group).map((s) => s.group))];
+  $("shipping").innerHTML = `<option value="">Pilih kota/kabupaten…</option>` +
+    c.shipping.filter((s) => s.tbd).map(shipOpt).join("") +
+    groups.map((g) => `<optgroup label="${esc(g)}">${c.shipping.filter((s) => s.group === g).map(shipOpt).join("")}</optgroup>`).join("") +
+    c.shipping.filter((s) => !s.tbd && !s.group).map(shipOpt).join("");
+  $("shipping").value = prevShip;
   renderCart();
 }
 
@@ -207,7 +213,7 @@ function renderCart() {
   const sub = S.cart.reduce((s, c) => s + c.qty * S.variants.find((x) => x.id === c.id).price, 0);
   const ship = S.config.shipping.find((s) => s.id === $("shipping").value);
   $("sSub").textContent = rp(sub);
-  $("sShip").textContent = ship ? (ship.cost ? rp(ship.cost) : "gratis") : "—";
+  $("sShip").textContent = ship ? (ship.tbd ? "dicek admin" : ship.cost ? rp(ship.cost) : "gratis") : "—";
 }
 
 document.addEventListener("click", (e) => {
@@ -268,7 +274,10 @@ async function showStatus(code) {
   const items = o.items.map((i) => `${i.qty}× ${esc(i.color)} ${esc(i.size)}`).join(", ");
   const totalStr = o.total.toLocaleString("id-ID");
   const head = totalStr.slice(0, -3), tail = totalStr.slice(-3);
-  const waText = `Halo, saya sudah transfer untuk pesanan ${o.code} sebesar ${rp(o.total)}. Berikut bukti transfernya:`;
+  const tbd = o.shipping_id === "cek-admin";
+  const waText = tbd
+    ? `Halo, saya pesan ${o.code}. Kota saya belum ada di daftar ongkir, mohon dicek ongkirnya ya.`
+    : `Halo, saya sudah transfer untuk pesanan ${o.code} sebesar ${rp(o.total)}. Berikut bukti transfernya:`;
   const waLink = `https://wa.me/${c.adminWa}?text=${encodeURIComponent(waText)}`;
 
   let body = `
@@ -278,8 +287,9 @@ async function showStatus(code) {
 
   if (o.status === "pending") {
     body += `
+    ${tbd ? `<div class="notice"><b>Ongkir belum termasuk.</b> Kota kamu belum ada di daftar, jadi admin akan mengecek ongkirnya dulu. Chat admin lewat tombol WhatsApp di bawah, lalu transfer setelah admin mengirim total akhirnya.</div>` : ""}
     <div class="card stack">
-      <div class="muted">Transfer tepat sebesar</div>
+      <div class="muted">${tbd ? "Total sementara (belum termasuk ongkir)" : "Transfer tepat sebesar"}</div>
       <div class="big">Rp${head}<span class="u">${tail}</span> <button class="copy" data-copy="${o.total}">salin</button></div>
       <div class="muted" style="font-size:13px">Termasuk kode unik <b>${o.unique_code}</b> supaya transfer Anda cepat dikenali. Mohon jangan dibulatkan.</div>
       <div style="border-top:1px solid var(--line);padding-top:12px">
@@ -288,7 +298,7 @@ async function showStatus(code) {
       </div>
       <div class="notice">Bayar sebelum <b id="deadline"></b> (<span id="countdown"></span>). Lewat dari itu pesanan otomatis batal.</div>
     </div>
-    <a class="btn wa" href="${waLink}" target="_blank" rel="noopener">Kirim bukti transfer via WhatsApp</a>`;
+    <a class="btn wa" href="${waLink}" target="_blank" rel="noopener">${tbd ? "Tanya ongkir ke admin via WhatsApp" : "Kirim bukti transfer via WhatsApp"}</a>`;
   } else if (o.status === "paid") {
     body += `<div class="card">Terima kasih! Pembayaran sudah kami terima. Pesanan sedang dikemas dan nomor resi akan muncul di halaman ini.</div>`;
   } else if (o.status === "shipped") {
@@ -301,9 +311,9 @@ async function showStatus(code) {
   body += `
     <div class="card">
       <div class="sum"><span>Subtotal</span><span>${rp(o.subtotal)}</span></div>
-      <div class="sum"><span>Ongkir (${esc(o.shipping_label)})</span><span>${o.shipping_cost ? rp(o.shipping_cost) : "gratis"}</span></div>
+      <div class="sum"><span>Ongkir (${esc(o.shipping_label)})</span><span>${tbd ? "dicek admin" : o.shipping_cost ? rp(o.shipping_cost) : "gratis"}</span></div>
       <div class="sum"><span>Kode unik</span><span>${rp(o.unique_code)}</span></div>
-      <div class="sum total"><span>Total</span><span>${rp(o.total)}</span></div>
+      <div class="sum total"><span>${tbd ? "Total sementara" : "Total"}</span><span>${rp(o.total)}</span></div>
     </div>
     <p class="muted" style="font-size:13px">Simpan link halaman ini untuk cek status pesanan kapan saja.</p>
     <a class="btn secondary" href="/">Belanja lagi</a>`;
